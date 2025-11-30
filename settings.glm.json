@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "cleanupPeriodDays": 120,
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
+    "ANTHROPIC_AUTH_TOKEN": "d79d2b8ffcfb4b97ba2f2b2b96263342.osGxBA9Gz4rBo8Vp",
+    "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
+    "API_TIMEOUT_MS": "3000000"
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": ["Bash(curl:*)", "WebSearch"],
+    "defaultMode": "bypassPermissions",
+    "additionalDirectories": ["~/.claude"]
+  },
+  "model": "haiku",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/duplicate_process_blocker"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/formatter"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bunx -y ccstatusline@latest",
+    "padding": 0
+  },
+  "alwaysThinkingEnabled": true
+}
