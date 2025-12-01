@@ -32,7 +32,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/formatter"
+            "command": "~/.claude/hooks/code_quality",
+            "timeout": 120
           }
         ]
       }
