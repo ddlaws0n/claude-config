@@ -1,0 +1,11 @@
+debug/
+file-history/
+plans/
+plugins/
+projects/
+session-env/
+shell-snapshots/
+statsig/
+todos/
+history.jsonl
+!.env.schema
