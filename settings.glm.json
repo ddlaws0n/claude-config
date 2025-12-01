@@ -11,9 +11,9 @@
   "permissions": {
     "allow": ["Bash(curl:*)", "WebSearch"],
     "defaultMode": "bypassPermissions",
-    "additionalDirectories": ["~/.claude"]
+    "additionalDirectories": ["/Users/dlawson/.claude"]
   },
-  "model": "haiku",
+  "model": "sonnet",
   "hooks": {
     "PreToolUse": [
       {
@@ -21,7 +21,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/duplicate_process_blocker"
+            "command": "/Users/dlawson/.claude/hooks/duplicate_process_blocker.py"
           }
         ]
       }
@@ -32,7 +32,34 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/formatter"
+            "command": "/Users/dlawson/.claude/hooks/code_quality.py",
+            "timeout": 120
+          },
+          {
+            "type": "command",
+            "command": "/Users/dlawson/.claude/hooks/post_tool_use_tracker.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/dlawson/.claude/hooks/code_quality_typecheck.py",
+            "timeout": 300
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/dlawson/.claude/hooks/duplicate_process_blocker.py --cleanup"
           }
         ]
       }
