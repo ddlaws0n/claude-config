@@ -170,9 +170,8 @@ class ProcessBlocker:
         # Ensure lock directory exists
         self.lock_dir.mkdir(parents=True, exist_ok=True)
 
-        # Always perform a quick cleanup of other files to keep /tmp tidy
-        # (Optional: could be moved to background or probabilistic if too slow)
-        self._clean_stale_locks()
+        # Note: Stale lock cleanup is handled by SessionStart hook (--cleanup flag)
+        # to avoid I/O overhead on every Bash command
 
         lock_hash = self._get_hash(command)
         lock_path = self._get_lock_path(lock_hash)
