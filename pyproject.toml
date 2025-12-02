@@ -1,0 +1,78 @@
+[project]
+authors         = [{ name = "David D Lawson", email = "david@lawson.dev" }]
+dependencies    = [
+    "cchooks>=0.1.4",
+    "tqdm>=4.67.1",
+]
+name            = "claude"
+requires-python = ">=3.12"
+version         = "0.1.0"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.17.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
+    "ruff>=0.12.5",
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+python_version         = "3.12"
+warn_return_any        = true
+warn_unused_configs    = true
+files = [
+    "hooks/",
+    "tests/",
+    "bin/"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--disable-warnings",
+]
+markers = [
+    "integration: Integration tests with real Claude Code events",
+    "error_handling: Error resilience and failure scenario tests",
+    "performance: Performance and timeout tests",
+    "sound_logic: Sound mapping and pattern matching tests",
+]
+
+[tool.ruff]
+include     = ["hooks"]
+line-length = 90
+extend-include = [
+    "hooks/pre_tool_handler",
+    "hooks/post_tool_handler",
+    "hooks/notification_handler",
+    "hooks/session_start_handler"
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+ignore = [
+    "D10",
+    "D203",
+    "D204",
+    "D213",
+    "D215",
+    "D400",
+    "D404",
+    "D406",
+    "D407",
+    "D408",
+    "D409",
+    "D413",
+    "D415",
+    "E402",
+    "E501"
+]

@@ -1,0 +1,42 @@
+{
+  "events": {
+    "Notification": "ready",
+    "Stop": "ready",
+    "SubagentStop": "ready",
+    "SessionStart": "ready"
+  },
+  "tools": {
+    "Edit": "edit",
+    "MultiEdit": "edit",
+    "Write": "edit",
+    "NotebookEdit": "edit",
+    "TodoWrite": "list"
+  },
+  "bash_patterns": [
+    {
+      "pattern": "^git commit",
+      "sound": "commit",
+      "description": "Git commits"
+    },
+    {
+      "pattern": "^gh pr",
+      "sound": "pr",
+      "description": "GitHub pull requests"
+    },
+    {
+      "pattern": "^bundle exec rspec|^rspec|^bin/rspec",
+      "sound": "test",
+      "description": "Ruby tests"
+    },
+    {
+      "pattern": "^npm test|^yarn test|^bun test|^pnpm test|^just test|^pytest|^go test",
+      "sound": "test",
+      "description": "Various tests"
+    },
+    {
+      "pattern": ".*",
+      "sound": "bash",
+      "description": "Fallback for any unmatched command"
+    }
+  ]
+}
