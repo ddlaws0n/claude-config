@@ -138,9 +138,6 @@ def main():
         output = {
             "decision": "block",
             "reason": "\n\n".join(errors),
-            "hookSpecificOutput": {
-                "hookEventName": "Stop",
-            },
         }
         print(json.dumps(output))
         sys.exit(0)
