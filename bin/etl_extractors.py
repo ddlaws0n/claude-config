@@ -324,7 +324,7 @@ class ProjectsExtractor(BaseExtractor):
         messages = []
         agents = {}  # Map agent_id -> (is_sidechain, parent_uuid)
         tool_uses = []
-        tool_results: list[dict] = []
+        tool_results: list[tuple] = []
 
         for msg_data in self._stream_jsonl(messages_file):
             try:
