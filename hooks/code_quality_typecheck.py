@@ -99,8 +99,24 @@ def check_python_project(project_dir: Path) -> tuple[bool, str]:
     if not has_python:
         return True, ""  # No Python project, skip
 
-    # Run mypy on project root
-    cmd = ["uv", "run", "mypy", "."]
+    # Special handling for .claude directory - exclude plugins
+    if project_dir.name == ".claude" or str(project_dir).endswith("/.claude"):
+        # Only check hooks/ and tests/ directories, exclude plugins/
+        target_dirs = []
+        if (project_dir / "hooks").exists():
+            target_dirs.append("hooks")
+        if (project_dir / "tests").exists():
+            target_dirs.append("tests")
+        if (project_dir / "bin").exists():
+            target_dirs.append("bin")
+
+        if not target_dirs:
+            return True, ""  # No target directories found
+
+        cmd = ["uv", "run", "mypy"] + target_dirs
+    else:
+        # Run mypy on project root for regular projects
+        cmd = ["uv", "run", "mypy", "."]
 
     print(f"🔍 Running Python type check on {project_dir.name}...", file=sys.stderr)
     return run_typecheck("python", cmd, str(project_dir))
