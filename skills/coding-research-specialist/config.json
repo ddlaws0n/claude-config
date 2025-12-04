@@ -1,0 +1,60 @@
+{
+  "name": "coding-research-specialist",
+  "version": "1.0.0",
+  "description": "Advanced coding research specialist with web search and MCP server integration",
+  "entry_point": "research_interface.py",
+  "type": "skill",
+  "auto_trigger": {
+    "enabled": true,
+    "keywords": [
+      "research", "investigate", "analyze", "explore", "deep dive",
+      "tell me about", "explain", "how does", "what is", "best practices",
+      "patterns", "architecture", "evolution", "history of", "comparison"
+    ],
+    "confidence_threshold": 0.7
+  },
+  "tools_required": [
+    "web_search",
+    "mcp_servers",
+    "file_system"
+  ],
+  "tools_optional": [
+    "ref",
+    "context7",
+    "perplexity"
+  ],
+  "permissions": {
+    "file_system": {
+      "read": true,
+      "write": true,
+      "scope": "project"
+    },
+    "web_access": true,
+    "mcp_servers": true
+  },
+  "output": {
+    "default_location": "docs/RESEARCH-YYYYMMDD-HHMM.md",
+    "format": "markdown",
+    "structured": true
+  },
+  "phases": {
+    "initial_research": {
+      "description": "Gather data from web search, MCP servers, and local context",
+      "timeout": 300
+    },
+    "preliminary_review": {
+      "description": "Present findings for user approval",
+      "requires_user_input": true
+    },
+    "final_report": {
+      "description": "Generate structured markdown documentation",
+      "timeout": 120
+    }
+  },
+  "metadata": {
+    "author": "Claude Code Workflow Generator",
+    "created": "2025-12-04",
+    "tags": ["research", "documentation", "technical", "analysis"],
+    "category": "specialist"
+  }
+}
