@@ -118,21 +118,18 @@ class ProjectsExtractor(BaseExtractor):
                 project_path = self._decode_project_path(project_dir.name)
 
                 # Ensure project exists in database
-                with self.db.transaction():
-                    assert self.db.conn is not None
-                    self.db.conn.execute(
-                        """
-                        INSERT OR IGNORE INTO projects
-                        (path, name, first_seen, last_seen)
-                        VALUES (?, ?, ?, ?)
-                        """,
-                        (
-                            str(project_path),
-                            project_dir.name,
-                            datetime.now().isoformat(),
-                            datetime.now().isoformat(),
-                        ),
-                    )
+                project_sql = """
+                INSERT OR IGNORE INTO projects
+                (path, name, first_seen, last_seen)
+                VALUES (?, ?, ?, ?)
+                """
+                project_params = (
+                    str(project_path),
+                    project_dir.name,
+                    datetime.now().isoformat(),
+                    datetime.now().isoformat(),
+                )
+                self.db.execute_batch(project_sql, [project_params])
 
                 # Find all JSONL files directly in project directory
                 jsonl_files = list(project_dir.glob("*.jsonl"))
@@ -224,23 +221,20 @@ class ProjectsExtractor(BaseExtractor):
 
         # Ensure session exists in database
         if not dry_run:
-            with self.db.transaction():
-                assert self.db.conn is not None
-                self.db.conn.execute(
-                    """
-                    INSERT OR IGNORE INTO sessions
-                    (id, project_path, cwd, git_branch, version, started_at)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        session_id,
-                        str(project_path),
-                        cwd,
-                        git_branch,
-                        version,
-                        first_msg.get("timestamp", datetime.now().isoformat()),
-                    ),
-                )
+            session_sql = """
+            INSERT OR IGNORE INTO sessions
+            (id, project_path, cwd, git_branch, version, started_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """
+            session_params = (
+                session_id,
+                str(project_path),
+                cwd,
+                git_branch,
+                version,
+                first_msg.get("timestamp", datetime.now().isoformat()),
+            )
+            self.db.execute_batch(session_sql, [session_params])
 
         # Now process all messages
         return self._process_session(project_path, session_id, jsonl_file, dry_run)
@@ -602,7 +596,7 @@ class TodosExtractor(BaseExtractor):
                 "SELECT id FROM agents WHERE session_id = ?", (ref_session_id,)
             )
             if agent_record:
-                agent_id = agent_record[0]
+                agent_id = agent_record["id"]
             # If not found, that's OK - agent_id will be NULL
 
         records = []
@@ -771,16 +765,13 @@ class FileHistoryExtractor(BaseExtractor):
             return 1
 
         try:
-            with self.db.transaction():
-                assert self.db.conn is not None
-                self.db.conn.execute(
-                    """
-                    INSERT OR IGNORE INTO file_versions
-                    (id, session_id, file_hash, version, content, file_size)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    """,
-                    (file_id, session_id, file_hash, version, content, file_size),
-                )
+            file_version_sql = """
+            INSERT OR IGNORE INTO file_versions
+            (id, session_id, file_hash, version, content, file_size)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """
+            file_version_params = (file_id, session_id, file_hash, version, content, file_size)
+            self.db.execute_batch(file_version_sql, [file_version_params])
             return 1
         except Exception as e:
             logger.error(f"Error inserting file version {version_file.name}: {e}")
@@ -900,22 +891,19 @@ class ShellSnapshotsExtractor(BaseExtractor):
             return 1
 
         try:
-            with self.db.transaction():
-                assert self.db.conn is not None
-                self.db.conn.execute(
-                    """
-                    INSERT OR IGNORE INTO shell_snapshots
-                    (id, timestamp, shell_type, content, content_hash)
-                    VALUES (?, ?, ?, ?, ?)
-                    """,
-                    (
-                        snapshot_id,
-                        timestamp.isoformat(),
-                        shell_type,
-                        content,
-                        content_hash,
-                    ),
-                )
+            shell_snapshot_sql = """
+            INSERT OR IGNORE INTO shell_snapshots
+            (id, timestamp, shell_type, content, content_hash)
+            VALUES (?, ?, ?, ?, ?)
+            """
+            shell_snapshot_params = (
+                snapshot_id,
+                timestamp.isoformat(),
+                shell_type,
+                content,
+                content_hash,
+            )
+            self.db.execute_batch(shell_snapshot_sql, [shell_snapshot_params])
             return 1
         except Exception as e:
             logger.error(f"Error inserting snapshot {snapshot_file.name}: {e}")
@@ -1132,7 +1120,7 @@ class PlansExtractor(BaseExtractor):
                 "SELECT id FROM agents WHERE session_id = ?", (ref_id,)
             )
             if agent_record:
-                agent_id = agent_record[0]
+                agent_id = agent_record["id"]
             # If not found, that's OK - agent_id will be NULL
 
         # Get file timestamps
@@ -1144,16 +1132,13 @@ class PlansExtractor(BaseExtractor):
             return 1
 
         try:
-            with self.db.transaction():
-                assert self.db.conn is not None
-                self.db.conn.execute(
-                    """
-                    INSERT OR REPLACE INTO plans
-                    (filename, agent_id, title, content, created_at, modified_at)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    """,
-                    (plan_file.name, agent_id, title, content, created_at, modified_at),
-                )
+            plan_sql = """
+            INSERT OR REPLACE INTO plans
+            (filename, agent_id, title, content, created_at, modified_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """
+            plan_params = (plan_file.name, agent_id, title, content, created_at, modified_at)
+            self.db.execute_batch(plan_sql, [plan_params])
             return 1
         except Exception as e:
             logger.error(f"Error inserting plan {plan_file.name}: {e}")

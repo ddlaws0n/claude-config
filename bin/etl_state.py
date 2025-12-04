@@ -47,22 +47,21 @@ class StateTracker:
         stat = file_path.stat()
         mtime = datetime.fromtimestamp(stat.st_mtime)
 
-        with self.db.transaction():
-            assert self.db.conn is not None
-            self.db.conn.execute(
-                """
-                INSERT OR REPLACE INTO etl_file_state
-                (file_path, source, mtime, size, last_processed)
-                VALUES (?, ?, ?, ?, ?)
-                """,
-                (
-                    str(file_path),
-                    source,
-                    mtime.isoformat(),
-                    stat.st_size,
-                    self.run_timestamp.isoformat(),
-                ),
-            )
+        sql = """
+        INSERT OR REPLACE INTO etl_file_state
+        (file_path, source, mtime, size, last_processed)
+        VALUES (?, ?, ?, ?, ?)
+        """
+        params = (
+            str(file_path),
+            source,
+            mtime.isoformat(),
+            stat.st_size,
+            self.run_timestamp.isoformat(),
+        )
+
+        # Use execute_batch with single record for compatibility across backends
+        self.db.execute_batch(sql, [params])
 
     def log_run(
         self,
@@ -74,22 +73,21 @@ class StateTracker:
         status: str,
     ):
         """Log ETL run statistics."""
-        with self.db.transaction():
-            assert self.db.conn is not None
-            self.db.conn.execute(
-                """
-                INSERT INTO etl_runs
-                (run_timestamp, source, files_processed, records_inserted,
-                 errors_count, duration_seconds, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    self.run_timestamp.isoformat(),
-                    source,
-                    files,
-                    records,
-                    errors,
-                    duration,
-                    status,
-                ),
-            )
+        sql = """
+        INSERT INTO etl_runs
+        (run_timestamp, source, files_processed, records_inserted,
+         errors_count, duration_seconds, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """
+        params = (
+            self.run_timestamp.isoformat(),
+            source,
+            files,
+            records,
+            errors,
+            duration,
+            status,
+        )
+
+        # Use execute_batch with single record for compatibility across backends
+        self.db.execute_batch(sql, [params])

@@ -133,3 +133,6 @@ docs/*.pdf
 
 # Local files
 *local*
+
+# Wrangler
+.wrangler/

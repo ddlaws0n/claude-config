@@ -69,8 +69,17 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Standard run with incremental loading
+  # Standard run (tries remote D1 first, fallbacks to local)
   etl.py
+
+  # Force remote D1 mode only
+  etl.py --remote
+
+  # Force local SQLite mode only
+  etl.py --local
+
+  # Use custom local database path
+  etl.py --local --db /path/to/conversations.db
 
   # Force re-process all files
   etl.py --force
@@ -78,8 +87,8 @@ Examples:
   # Process only projects and todos
   etl.py --sources projects,todos
 
-  # Use custom paths
-  etl.py --source /path/to/.claude --db /path/to/conversations.db
+  # Use custom source directory
+  etl.py --source /path/to/.claude
 
   # Dry run to see what would be processed
   etl.py --dry-run --verbose
@@ -93,11 +102,24 @@ Examples:
         help=f"Source directory (default: {DEFAULT_SOURCE})",
     )
 
+    # Database mode selection
+    db_group = parser.add_mutually_exclusive_group()
+    db_group.add_argument(
+        "--local",
+        action="store_true",
+        help="Use local SQLite database only",
+    )
+    db_group.add_argument(
+        "--remote",
+        action="store_true",
+        help="Use remote Cloudflare D1 database only",
+    )
+
     parser.add_argument(
         "--db",
         type=Path,
         default=DEFAULT_DB,
-        help=f"Database path (default: {DEFAULT_DB})",
+        help=f"Local database path (only used with --local, default: {DEFAULT_DB})",
     )
 
     parser.add_argument(
@@ -148,11 +170,29 @@ def main() -> int:
         return 1
 
     try:
-        # Initialize database
-        logger.info(f"Using database: {args.db}")
-        db = DatabaseManager(args.db)
+        # Determine database mode
+        if args.remote:
+            # Force remote mode
+            logger.info("Using remote Cloudflare D1 database (forced)")
+            db = DatabaseManager(remote=True, fallback_to_local=False)
+        elif args.local:
+            # Force local mode
+            logger.info(f"Using local SQLite database: {args.db}")
+            db = DatabaseManager(db_path=args.db, remote=False)
+        else:
+            # Default: try remote first, fallback to local
+            logger.info("Trying remote Cloudflare D1 database (will fallback to local if unavailable)")
+            db = DatabaseManager(remote=True, fallback_to_local=True)
+
+        # Connect and setup
         db.connect()
         db.setup_schema()
+
+        # Log which backend is being used
+        if db.is_remote:
+            logger.info("✅ Connected to remote Cloudflare D1 database")
+        else:
+            logger.info("✅ Connected to local SQLite database")
 
         # Initialize state tracker
         state = StateTracker(db, force=args.force)
