@@ -126,8 +126,6 @@ history.jsonl
 # LLM files
 llm/**
 .artifacts/** */
-docs/*.md
-docs/*.pdf
 *.example
 
 # Local files
