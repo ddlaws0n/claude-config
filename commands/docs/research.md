@@ -1,15 +1,33 @@
 ---
 description: Conduct comprehensive technical research and create structured documentation
 argument-hint: [topic] [output-path (optional)]
-model: model: claude-haiku-4-5-20251001
+model: claude-haiku-4-5-20251001
+allowed-tools: Read, Grep, Glob, Bash, WebFetch, WebSearch
 ---
 
-Conduct comprehensive technical research on the specified topic: $1
+# Technical Research Task
 
-Save the research report to: $2 (if not provided, use `docs/RESEARCH-YYYYMMDD-HHMM.md` with current timestamp)
+**Topic**: $1
+**Output**: $2 (default: `docs/RESEARCH-YYYYMMDD-HHMM.md` with current timestamp)
 
-Use web search tools and available MCP servers (ref, context7, perplexity) to gather data from multiple sources. Analyze relevant files in the current codebase for context. Present preliminary findings for approval before generating the final structured report.
+## Research Process
 
-Organize the research report into four sections: fundamentals and concepts (core principles, architecture, terminology, historical context), implementation patterns (common approaches, best practices, anti-patterns, performance considerations), practical examples (working code snippets, real-world use cases, integration patterns, testing approaches), and version compatibility (version-specific differences, breaking changes, deprecation notices, compatibility matrices).
+1. **Gather information** from multiple sources:
+   - Web search for current documentation and articles
+   - MCP servers if available (context7, perplexity, ref)
+   - Local codebase files for project context
 
-Create timestamped files for multiple research sessions to maintain history. Verify information across multiple sources and provide grounded, hallucination-free answers based on actual documentation and code.
+2. **Present preliminary findings** for approval before final report
+
+3. **Generate structured report** with these sections:
+   - **A. Fundamentals & Concepts**: Core principles, architecture, terminology, historical context
+   - **B. Implementation Patterns**: Common approaches, best practices, anti-patterns, performance
+   - **C. Practical Examples**: Working code snippets, real-world use cases, integration, testing
+   - **D. Version & Compatibility**: Version differences, breaking changes, deprecation notices
+
+## Requirements
+
+- Verify information across multiple sources
+- Provide grounded, hallucination-free answers based on actual documentation
+- Create timestamped files to maintain research history
+- Include source attribution in the report

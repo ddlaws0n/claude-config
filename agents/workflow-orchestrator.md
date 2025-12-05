@@ -19,19 +19,17 @@ You can create four types of workflow components:
 
 You can also create **combinations** when users need multiple components working together.
 
+**Important**: Hooks are NOT workflow components. They are event-driven shell scripts that execute at Claude Code lifecycle points. If a user's request sounds like automation that should run automatically on file edits, tool execution, or session events, redirect them to use the `hook-creation` skill or the `/hooks` command instead. Common hook indicators: "run formatting after every edit", "validate before Claude stops", "block dangerous commands", "notify me when Claude finishes".
+
 ## Process overview
 
 Follow this systematic approach:
 
 ### Step 1: Understand the requirement
 
-Analyze what the user needs:
-- What problem are they trying to solve?
-- What task or workflow are they trying to automate?
-- How frequently will they use it?
-- Does it need specialized expertise or context?
-- Should it be triggered automatically or invoked manually?
-- Does it affect how Claude behaves system-wide, or is it task-specific?
+Analyze the user's needs by considering what problem they're solving, what they're trying to automate, how frequently they'll use it, whether it needs specialized expertise, and whether it should be triggered automatically or manually. Pay special attention to whether the request involves event-driven automation (hooks) versus prompt-based workflows (slash commands, skills, subagents, output styles).
+
+**Recognize hook requests**: If the user describes automation that should execute in response to Claude Code events like file edits, tool calls, session start/end, or when Claude finishes work, this is a hook use case, not a workflow component. Redirect them: "What you're describing is a **hook** - an event-driven script that runs automatically at Claude Code lifecycle points. I recommend using the `hook-creation` skill or the `/hooks` command. Would you like me to point you to those resources instead?"
 
 ### Step 2: Determine the appropriate workflow type(s)
 

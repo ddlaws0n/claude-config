@@ -1,28 +1,41 @@
+---
+name: coding-research-specialist
+description: Conducts comprehensive technical research using web search and MCP servers. Use when research, investigation, deep analysis, or exploration is requested on coding topics, libraries, frameworks, or technical patterns.
+---
+
 # Advanced Coding Research Specialist
 
 A comprehensive research workflow that leverages web search tools and MCP servers to conduct thorough investigations on coding topics, delivering structured findings in markdown format.
 
-## Auto-triggering
+## When This Skill Applies
 
-This skill automatically triggers when research-oriented keywords are detected:
-- "research", "investigate", "analyze", "explore"
-- Technology pattern queries (e.g., "React patterns", "Go best practices")
-- Deep-dive requests on technical topics
+Activate this skill when the user:
+- Requests research, investigation, analysis, or exploration of technical topics
+- Asks about technology patterns (e.g., "React patterns", "Go best practices")
+- Needs deep-dive documentation on libraries, frameworks, or architectures
+- Wants comparison or evolution information on technologies
 
-## How to Use
+## Research Process
 
-### Automatic Triggering
-Simply ask a research question:
-- "Research Rust async patterns and best practices"
-- "Investigate the evolution of state management in React"
-- "Analyze microservice architecture patterns for Node.js"
+### Phase 1: Information Gathering
+Use these tools to collect comprehensive data:
+- **Web Search**: Current articles, blog posts, tutorials
+- **MCP Servers** (if available): context7, perplexity, ref for library docs
+- **Local Files**: Examine relevant project files for context
 
-### Manual Invocation
-Use the slash command: `/research [topic] --output [custom-file.md]`
+### Phase 2: Preliminary Findings
+Present a summary of what was found before writing the final report:
+- Number and types of sources consulted
+- Key themes and patterns discovered
+- Proposed report structure
+- Ask user to approve, redirect, or expand scope
+
+### Phase 3: Final Report Generation
+Create the structured markdown report with verified information.
 
 ## Output Format
 
-Research findings are delivered in a structured markdown format with these sections:
+Organize all research reports with these four sections:
 
 ### A. Fundamentals & Concepts
 - Core principles and architecture
@@ -50,25 +63,14 @@ Research findings are delivered in a structured markdown format with these secti
 
 ## Output Location
 
-- Default: `docs/RESEARCH-YYYYMMDD-HHMM.md` (e.g., `docs/RESEARCH-20250412-1430.md`)
-- Custom: Specify with `--output` flag in slash command
-- Multiple sessions: Creates timestamped files automatically
+- **Default**: `docs/RESEARCH-YYYYMMDD-HHMM.md` (timestamped)
+- **Custom**: User can specify output path
+- **Multiple sessions**: Create separate timestamped files
 
-## Tool Integration
+## Quality Standards
 
-The workflow leverages:
-- **Web Search**: Up-to-date information from the web
-- **MCP Servers**: ref, context7, perplexity (when available)
-- **Local Analysis**: Repository exploration and code examination
-- **Documentation**: Official docs, RFCs, and specifications
-
-## Phased Approach
-
-1. **Initial Research**: Comprehensive data gathering from multiple sources
-2. **Preliminary Findings**: Presents initial discoveries for review
-3. **Direction Approval**: User can approve, redirect, or expand research scope
-4. **Final Report**: Complete structured documentation
-
----
-
-*This skill specializes in turning complex technical questions into actionable research documentation.*
+- Verify information across multiple sources
+- Provide source attribution for key claims
+- Avoid hallucination - only report what sources confirm
+- Include code examples that are tested/verified where possible
+- Note version-specific information clearly

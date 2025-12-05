@@ -48,7 +48,6 @@ Before finalizing any component, verify:
 
 **Argument Handling**: Use `$ARGUMENTS` for free-form input, `$1`, `$2`, `$3` for structured parameters with distinct roles.
 
-**Tool Restrictions**: Use `allowed-tools` to limit capabilities for security-sensitive workflows or read-only operations.
+**Tool Restrictions**: Use `allowed-tools` to limit capabilities for security-sensitive workflows or read-only operations. Supported tools: "^((AskUserQuestion|Bash|BashOutput|Edit|ExitPlanMode|Glob|Grep|KillShell|NotebookEdit|Read|SlashCommand|Task|TodoWrite|WebFetch|WebSearch|Write)(\\((?=.*[^)*?])[^)]+\\))?|mcp__.*)$",
 
 **Proactive Invocation**: Include phrases like "use PROACTIVELY" or "MUST BE USED" in subagent descriptions for automatic triggering.
-

@@ -74,7 +74,7 @@ fi
 rel_path="${abs_path#$PROJECT_ROOT/}"
 
 # 4. Setup Cache
-cache_dir="$PROJECT_ROOT/.claude/tsc-cache/$session_id"
+cache_dir="$PROJECT_ROOT/.claude/logs/$session_id"
 
 # Security: Validate cache directory path
 if [[ ! "$cache_dir" =~ ^"$PROJECT_ROOT"/\.claude/ ]]; then
