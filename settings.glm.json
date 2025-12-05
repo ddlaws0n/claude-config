@@ -50,6 +50,11 @@
             "type": "command",
             "command": "/Users/dlawson/.claude/hooks/code_quality_typecheck.py",
             "timeout": 300
+          },
+          {
+            "type": "command",
+            "command": "/Users/dlawson/.claude/hooks/duplicate_process_blocker.py --session-cleanup \"$CLAUDE_SESSION_ID\"",
+            "timeout": 10
           }
         ]
       }

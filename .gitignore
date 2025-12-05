@@ -122,7 +122,6 @@ backups/
 !commands/docs
 history.jsonl
 !.env.schema
-reference/
 
 # LLM files
 llm/**
