@@ -106,12 +106,48 @@ detect_repo() {
         frontend|backend|client|server|web|api|database|prisma)
             echo "$root_folder"
             ;;
+        # Common directory structures (2024 patterns)
+        src|source|lib|libname|components|modules|utils|common|shared|core|base)
+            # For nested structures like src/components/Header.tsx
+            # Use root_folder as the workspace name
+            echo "$root_folder"
+            ;;
+        # JavaScript/TypeScript patterns
+        types|typings|interfaces|models|schemas|dto|types)
+            echo "$root_folder"
+            ;;
+        # Testing patterns
+        test|tests|__tests__|specs|spec|e2e|integration)
+            echo "$root_folder"
+            ;;
+        # Build/Dist patterns
+        build|dist|out|output|target)
+            echo "$root_folder"
+            ;;
+        # Documentation patterns
+        docs|documentation|readme|guide)
+            echo "$root_folder"
+            ;;
+        # Config patterns
+        config|configuration|settings|conf|cfg)
+            echo "$root_folder"
+            ;;
+        # Asset patterns
+        assets|static|public|resources|media|images|styles|css|scss|sass)
+            echo "$root_folder"
+            ;;
+        # Tooling patterns
+        scripts|tools|bin|vendor|external|third_party)
+            echo "$root_folder"
+            ;;
         # Root level files
         *)
             if [[ "$path" != *"/"* ]]; then
                 echo "root"
             else
-                echo "unknown" # Or return root_folder to be safe
+                # For unrecognized paths, use the first directory segment
+                # This ensures we always return a valid repo name
+                echo "$root_folder"
             fi
             ;;
     esac
@@ -156,27 +192,58 @@ get_tsc_command() {
     fi
 }
 
-# 7. Logging (Atomic / Append Only with error handling)
+# 7. Enhanced Logging with Claude Code Best Practices
+# Uses stderr for debugging telemetry and stdout for Claude context
 
 # Function for safe atomic logging
 safe_log() {
     local content="$1"
     local file="$2"
+    local log_level="${3:-info}"
 
     # Security: Validate file path
     if [[ ! "$file" =~ ^"$cache_dir"/ && "$file" != "$cache_dir"/* ]]; then
-        echo "⚠️  Error: Invalid log file path: $file" >&2
+        echo "⚠️  [ERROR] Invalid log file path: $file" >&2
         return 1
     fi
 
     # Atomic write with error handling
     echo "$content" >> "$file" 2>/dev/null || {
-        echo "⚠️  Warning: Failed to write to log file: $file" >&2
+        echo "⚠️  [ERROR] Failed to write to log file: $file" >&2
         return 1
     }
 }
 
-# Log the raw edit event
+# Function for structured JSON logging (Claude Code telemetry)
+log_telemetry() {
+    local event_type="$1"
+    local details="$2"
+    local timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+    # Debug telemetry to stderr (visible with --debug)
+    echo "🔍 [POST_TOOL_USE] $event_type: $details" >&2
+
+    # Structured log for session continuity
+    local telemetry_entry="{
+        \"timestamp\": \"$timestamp\",
+        \"event_type\": \"$event_type\",
+        \"session_id\": \"$session_id\",
+        \"project_root\": \"$PROJECT_ROOT\",
+        \"details\": $details
+    }"
+
+    safe_log "$telemetry_entry" "$cache_dir/telemetry.json" "debug"
+}
+
+# Enhanced logging with telemetry
+log_telemetry "file_edited" "{
+    \"tool_name\": \"$tool_name\",
+    \"file_path\": \"$rel_path\",
+    \"repo_workspace\": \"$repo\",
+    \"absolute_path\": \"$abs_path\"
+}"
+
+# Log the raw edit event (legacy format)
 safe_log "$(date +%s):$rel_path:$repo" "$cache_dir/edited-files.log"
 
 # Log the repo if not already in the "session set"
@@ -186,7 +253,29 @@ safe_log "$repo" "$cache_dir/affected-repos.log"
 build_cmd=$(get_build_command "$repo_full_path" 2>/dev/null || echo "")
 tsc_cmd=$(get_tsc_command "$repo_full_path" 2>/dev/null || echo "")
 
-# Log discovered commands
+# Enhanced command discovery telemetry
+commands_found="[]"
+if [[ -n "$build_cmd" || -n "$tsc_cmd" ]]; then
+    commands="["
+    if [[ -n "$build_cmd" ]]; then
+        commands+="\"$build_cmd\""
+    fi
+    if [[ -n "$tsc_cmd" ]]; then
+        if [[ -n "$build_cmd" ]]; then
+            commands+=","
+        fi
+        commands+="\"$tsc_cmd\""
+    fi
+    commands+="]"
+
+    log_telemetry "commands_discovered" "{
+        \"repo\": \"$repo\",
+        \"workspace_path\": \"$repo_full_path\",
+        \"commands\": $commands
+    }"
+fi
+
+# Log discovered commands (legacy format)
 if [[ -n "$build_cmd" ]]; then
     safe_log "$repo:build:$build_cmd" "$cache_dir/commands.log"
 fi
@@ -194,6 +283,9 @@ fi
 if [[ -n "$tsc_cmd" ]]; then
     safe_log "$repo:tsc:$tsc_cmd" "$cache_dir/commands.log"
 fi
+
+# Session summary for Claude context (stdout)
+echo "📝 Workspace Tracker: Edited $rel_path in '$repo' workspace"
 
 # exit clean
 exit 0
