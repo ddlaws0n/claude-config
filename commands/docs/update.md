@@ -1,17 +1,9 @@
 ---
 description: Update existing documentation
-agent: doc-specialist
 argument-hint: [file-path or topic]
+model: claude-haiku-4-5-20251001
 ---
 
-Update existing documentation. Use the doc-specialist to:
+Use the doc-specialist subagent to update existing documentation at: $1 (if no argument provided, update all documentation starting with root directory)
 
-1. Read and understand the current documentation structure
-2. Identify what needs updating based on: $ARGUMENTS (if no arguments are provided, update all documentation starting with the root directory)
-3. Preserve the existing structure and style
-4. Update or add content while maintaining consistency
-5. Clean up outdated information
-6. Fix broken links and improve clarity
-7. Suggest related updates if needed
-
-Focus on maintaining documentation quality while improving content accuracy and relevance.
+Read and understand the current documentation structure, identify what needs updating, preserve existing structure and style, update or add content while maintaining consistency, clean up outdated information, fix broken links and improve clarity, and suggest related updates if needed. Focus on maintaining documentation quality while improving content accuracy and relevance.
