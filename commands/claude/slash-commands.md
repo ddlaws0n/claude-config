@@ -74,10 +74,9 @@ If reviewing multiple commands, provide a summary table showing compliance acros
 ## Reference Documentation
 
 This command is informed by:
-- `docs/slash-commands.md` - Official slash command documentation
-- `docs/prompting-best-practices.md` - Claude 4.x prompting guidelines
-- `docs/models.md` - Model selection guidance
-- Recent audit findings from 2025-12-05 conversation
+- `@/Users/dlawson/.claude/docs/slash-commands.md` - Official slash command documentation
+- `@/Users/dlawson/.claude/docs/prompting-best-practices.md` - Claude 4.x prompting guidelines
+- `@/Users/dlawson/.claude/docs/models.md` - Model selection guidance
 
 Apply these standards rigorously to ensure all slash commands are functional, maintainable, and follow Anthropic's documented best practices.
 
