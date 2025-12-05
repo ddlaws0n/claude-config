@@ -5,12 +5,11 @@ A comprehensive research workflow that leverages multiple tools for technical in
 """
 
 import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
-import re
+from typing import Any, Dict
+
 
 class ResearchSpecialist:
     def __init__(self):
@@ -26,10 +25,7 @@ class ResearchSpecialist:
         output_spec = input_data.get("output", "")
 
         if not self.topic:
-            return {
-                "status": "error",
-                "message": "Research topic is required"
-            }
+            return {"status": "error", "message": "Research topic is required"}
 
         # Set output path
         if output_spec:
@@ -44,7 +40,7 @@ class ResearchSpecialist:
         return {
             "status": "success",
             "topic": self.topic,
-            "output_path": str(self.output_path)
+            "output_path": str(self.output_path),
         }
 
     def conduct_research(self, query: str) -> Dict[str, Any]:
@@ -65,11 +61,13 @@ class ResearchSpecialist:
         print("🌐 Searching web resources...")
         # This would interface with web search tools
         # For now, simulate findings
-        self.sources.append({
-            "type": "web_search",
-            "query": query,
-            "timestamp": datetime.now().isoformat()
-        })
+        self.sources.append(
+            {
+                "type": "web_search",
+                "query": query,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
     def _gather_mcp_research(self, query: str):
         """Gather information from MCP servers if available"""
@@ -77,13 +75,15 @@ class ResearchSpecialist:
         # This would interface with available MCP servers
         mcp_servers = ["ref", "context7", "perplexity"]
         for server in mcp_servers:
-            self.sources.append({
-                "type": "mcp_server",
-                "server": server,
-                "query": query,
-                "status": "attempted",
-                "timestamp": datetime.now().isoformat()
-            })
+            self.sources.append(
+                {
+                    "type": "mcp_server",
+                    "server": server,
+                    "query": query,
+                    "status": "attempted",
+                    "timestamp": datetime.now().isoformat(),
+                }
+            )
 
     def _gather_local_context(self, query: str):
         """Analyze local codebase for context if relevant"""
@@ -93,13 +93,17 @@ class ResearchSpecialist:
             # Look for relevant files
             for pattern in ["**/*.md", "**/*.rst", "docs/**/*", "README*"]:
                 for file_path in current_dir.glob(pattern):
-                    if file_path.is_file() and file_path.stat().st_size < 100000:  # < 100KB
-                        self.sources.append({
-                            "type": "local_file",
-                            "path": str(file_path),
-                            "size": file_path.stat().st_size,
-                            "timestamp": datetime.now().isoformat()
-                        })
+                    if (
+                        file_path.is_file() and file_path.stat().st_size < 100000
+                    ):  # < 100KB
+                        self.sources.append(
+                            {
+                                "type": "local_file",
+                                "path": str(file_path),
+                                "size": file_path.stat().st_size,
+                                "timestamp": datetime.now().isoformat(),
+                            }
+                        )
 
     def _present_preliminary_findings(self) -> Dict[str, Any]:
         """Present initial findings for user approval"""
@@ -109,8 +113,8 @@ class ResearchSpecialist:
 **Topic**: {self.topic}
 **Sources Found**: {len(self.sources)}
 - Web search: ✅
-- MCP servers: {'✅' if any(s['type'] == 'mcp_server' and s.get('status') != 'failed' for s in self.sources) else '⚠️ (may fall back to web)'}
-- Local context: {'✅' if any(s['type'] == 'local_file' for s in self.sources) else 'N/A'}
+- MCP servers: {"✅" if any(s["type"] == "mcp_server" and s.get("status") != "failed" for s in self.sources) else "⚠️ (may fall back to web)"}
+- Local context: {"✅" if any(s["type"] == "local_file" for s in self.sources) else "N/A"}
 
 **Proposed Research Direction**:
 1. Fundamentals & Concepts - Core principles and architecture
@@ -127,7 +131,7 @@ Do you approve this research direction, or would you like to modify the focus?
             "status": "preliminary",
             "summary": summary,
             "sources_count": len(self.sources),
-            "output_path": str(self.output_path)
+            "output_path": str(self.output_path),
         }
 
     def generate_final_report(self, query: str) -> Dict[str, Any]:
@@ -137,7 +141,7 @@ Do you approve this research direction, or would you like to modify the focus?
         # Create structured markdown content
         content = f"""# Research Report: {query}
 
-*Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*
+*Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}*
 
 ## Sources Consulted
 {self._format_sources()}
@@ -230,19 +234,19 @@ Some sections may require manual verification with the most current documentatio
 
         # Write to file
         try:
-            with open(self.output_path, 'w', encoding='utf-8') as f:
+            with open(self.output_path, "w", encoding="utf-8") as f:
                 f.write(content)
 
             return {
                 "status": "completed",
                 "output_file": str(self.output_path),
                 "sections": 4,
-                "sources": len(self.sources)
+                "sources": len(self.sources),
             }
         except Exception as e:
             return {
                 "status": "error",
-                "message": f"Failed to write output file: {str(e)}"
+                "message": f"Failed to write output file: {str(e)}",
             }
 
     def _format_sources(self) -> str:
@@ -262,6 +266,7 @@ Some sections may require manual verification with the most current documentatio
 
         return "\n".join(source_list)
 
+
 def main():
     """Main entry point"""
     if len(sys.argv) < 2:
@@ -269,7 +274,7 @@ def main():
         sys.exit(1)
 
     try:
-        with open(sys.argv[1], 'r') as f:
+        with open(sys.argv[1], "r") as f:
             input_data = json.load(f)
     except Exception as e:
         print(json.dumps({"status": "error", "message": f"Invalid input JSON: {str(e)}"}))
@@ -288,6 +293,7 @@ def main():
 
     # Return result
     print(json.dumps(research_result, indent=2))
+
 
 if __name__ == "__main__":
     main()
