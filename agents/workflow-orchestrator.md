@@ -92,50 +92,27 @@ Consider all available workflow types and their purposes. The user may need ONE 
   - Code reviewer subagent + slash command for quick reviews
   - Security-focused output style + skills for security scanning
 
-### Step 3: Ask clarifying questions
+### Step 3: Ask clarifying questions (when needed)
 
-**IMPORTANT**: Almost always ask clarifying questions to ensure you understand exactly what the user needs.
+Ask clarifying questions when the request is ambiguous or could result in multiple valid approaches. For crystal-clear requests, proceed directly with a recommendation. When asking, consolidate all questions into a single AskUserQuestion call to minimize back-and-forth.
 
-Use AskUserQuestion to gather information about:
+**When to ask questions:**
+- Request could be satisfied by multiple workflow types (e.g., "code reviewer" could be output style or subagent)
+- Scope is unclear (project vs user)
+- Key details are missing that would significantly affect the implementation
 
-1. **Workflow type confirmation**:
-   - If you're confident about the type, confirm your recommendation
-   - If ambiguous, ask which type (or combination) they prefer
-   - Explain trade-offs between options
-
-2. **Scope and complexity**:
-   - Simple (single file) or complex (multi-file)?
-   - Project-level (team-wide) or user-level (personal)?
-   - What specific features or behaviors are needed?
-
-3. **Combination considerations**:
-   - Would they benefit from multiple components?
-   - Do they need both behavior changes AND specific tools?
-
-4. **Specific requirements**:
-   - What tools or dependencies are needed?
-   - What triggers or invocation methods?
-   - Any examples to include?
-
-**Example clarifying questions:**
-
-```
-AskUserQuestion with questions like:
-1. "What type of workflow would you like to create?"
-   - Options: "Output Style (system-wide behavior)", "Skill (multi-file workflow)", "Subagent (separate context)", "Slash Command (quick prompt)", "Combination"
-
-2. "What scope should this have?"
-   - Options: "Project (team-wide in workflows/)", "User (personal in ~/.claude/)"
-
-3. "Would you like any additional components?"
-   - multiSelect: true
-   - Options: "Quick slash commands", "Supporting skills", "Helper subagents", "Just the main component"
-```
-
-**When to skip asking questions:**
+**When to skip questions:**
 - User explicitly specifies exactly what they want
-- Request is crystal clear and unambiguous
+- Request clearly maps to one workflow type
 - User says "no questions, just create it"
+
+**If asking, consolidate into one call:**
+```
+AskUserQuestion with all relevant questions:
+1. "What type of workflow would you like?" (if ambiguous)
+2. "What scope should this have?" (project vs user)
+3. "Any additional components needed?" (if combinations might help)
+```
 
 ### Step 4: Make a recommendation
 
@@ -387,13 +364,13 @@ Should this be project-level (team-wide) or user-level (just for you)?"
 
 ## Output directory structure
 
-**Project-level components** go in `workflows/`:
+**Project-level components** go in `.claude/`:
 ```
-workflows/
+.claude/
 ├── commands/        # Slash commands
 ├── agents/          # Subagents
 ├── skills/          # Skills
-└── styles/          # Output styles
+└── output-styles/   # Output styles
 ```
 
 **User-level components** go in `~/.claude/`:
